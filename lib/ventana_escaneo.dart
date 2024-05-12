@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/ventana_escaneo.dart';
-import 'ventana_iniciar_sesion.dart'; // Importa la ventana de inicio de sesión aquí
+import 'ventana_principal.dart'; // Importa la ventana principal aquí
+import 'ventana_iniciar_sesion.dart';
 
-import 'package:flutter/material.dart';
-
-class VentanaPrincipal extends StatefulWidget {
+class VentanaEscaneo extends StatefulWidget {
   @override
-  _VentanaPrincipalState createState() => _VentanaPrincipalState();
+  _VentanaEscaneoState createState() => _VentanaEscaneoState();
 }
 
-class _VentanaPrincipalState extends State<VentanaPrincipal> {
-  int _selectedIndex = 0; // Índice del elemento seleccionado en el menú
+class _VentanaEscaneoState extends State<VentanaEscaneo> {
+  int _selectedIndex = 1; // Índice del elemento seleccionado en el menú
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +49,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 0; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                // Agrega la lógica para la opción "Inicio" aquí
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaPrincipal()));
+                // Navegar a la ventana principal al hacer clic en "Inicio"
               },
             ),
             ListTile(
@@ -62,8 +61,7 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 1; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaEscaneo()));
-                // Navegar a la ventana de escaneo al hacer clic en "Escaneo QR"
+                // Agrega la lógica para la opción "Escaneo QR" aquí
               },
             ),
             ListTile(
@@ -77,17 +75,35 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
           ],
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'SISTEMA DE CONTROL DE INVENTARIOS',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24),
-          ),
-          SizedBox(height: 20),
-          Image.asset('assets/images/logo.png'), // Ajusta la ruta según la ubicación de tu imagen
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.qr_code_scanner, size: 80, color: Colors.grey), // Icono para iniciar el escaneo
+            SizedBox(height: 20),
+            Text(
+              'Por favor, inicie el escaneo QR para los diferentes bienes.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            CircleAvatar(
+              backgroundImage: AssetImage('assets/images/scan_image.jpg'), // Agrega la ruta de tu imagen de escaneo
+              radius: 60,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Agrega la lógica para iniciar el escaneo aquí
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFA80000), // Color del botón igual al de los otros botones
+                minimumSize: Size(double.infinity, 40),
+              ),
+              child: Text('Iniciar Escaneo', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }
