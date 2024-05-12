@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/ventana_iniciar_sesion.dart';
 import 'ventana_principal.dart'; // Importa la ventana principal aquí
+import 'ventana_iniciar_sesion.dart';
 
 class VentanaEscaneo extends StatefulWidget {
   @override
@@ -46,10 +46,11 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
               title: Text('Inicio', style: TextStyle(color: _selectedIndex == 0 ? Color(0xFFA80000) : null)),
               onTap: () {
                 setState(() {
-                  _selectedIndex = 0;
+                  _selectedIndex = 0; // Establecer el índice seleccionado
                 });
-                Navigator.pop(context);
-                // Agrega la lógica para la opción "Inicio" aquí
+                Navigator.pop(context); // Cerrar el drawer
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaPrincipal()));
+                // Navegar a la ventana principal al hacer clic en "Inicio"
               },
             ),
             ListTile(
@@ -57,9 +58,9 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
               title: Text('Escaneo QR', style: TextStyle(color: _selectedIndex == 1 ? Color(0xFFA80000) : null)),
               onTap: () {
                 setState(() {
-                  _selectedIndex = 1;
+                  _selectedIndex = 1; // Establecer el índice seleccionado
                 });
-                Navigator.pop(context);
+                Navigator.pop(context); // Cerrar el drawer
                 // Agrega la lógica para la opción "Escaneo QR" aquí
               },
             ),
