@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ventana_iniciar_sesion.dart'; // Importa la ventana de inicio de sesión aquí
 
 class VentanaPrincipal extends StatefulWidget {
   @override
@@ -65,11 +66,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
               leading: Icon(Icons.logout, color: _selectedIndex == 2 ? Color(0xFFA80000) : null),
               title: Text('Cerrar Sesión', style: TextStyle(color: _selectedIndex == 2 ? Color(0xFFA80000) : null)),
               onTap: () {
-                setState(() {
-                  _selectedIndex = 2; // Establecer el índice seleccionado
-                });
-                Navigator.pop(context); // Cerrar el drawer
-                // Aquí puedes agregar la lógica para la opción "Cerrar Sesión"
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaIniciarSesion()));
+                // Reemplazar la ventana actual con la ventana de inicio de sesión al hacer clic en "Cerrar Sesión"
               },
             ),
           ],
