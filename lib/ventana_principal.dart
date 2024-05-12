@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/ventana_escaneo.dart';
 import 'ventana_iniciar_sesion.dart'; // Importa la ventana de inicio de sesión aquí
+
+import 'package:flutter/material.dart';
 
 class VentanaPrincipal extends StatefulWidget {
   @override
@@ -18,7 +21,7 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: Icon(Icons.menu, color: Colors.white), // Cambiar color del icono del menú a blanco
+              icon: Icon(Icons.menu, color: Colors.white),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -48,7 +51,7 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 0; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                // Aquí puedes agregar la lógica para la opción "Inicio"
+                // Agrega la lógica para la opción "Inicio" aquí
               },
             ),
             ListTile(
@@ -59,7 +62,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 1; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                // Aquí puedes agregar la lógica para la opción "Escaneo QR"
+                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaEscaneo()));
+                // Navegar a la ventana de escaneo al hacer clic en "Escaneo QR"
               },
             ),
             ListTile(
