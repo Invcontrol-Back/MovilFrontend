@@ -8,7 +8,7 @@ class VentanaEscaneo extends StatefulWidget {
   _VentanaEscaneoState createState() => _VentanaEscaneoState();
 }
 
-class _VentanaEscaneoState extends State<VentanaEscaneo> {
+class _VentanaEscaneoState extends State<VentanaEscaneo> {status
   int _selectedIndex = 1; // Índice del elemento seleccionado en el menú
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
