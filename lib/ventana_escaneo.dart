@@ -1,14 +1,36 @@
 import 'package:flutter/material.dart';
-import 'ventana_principal.dart'; // Importa la ventana principal aquí
 import 'ventana_iniciar_sesion.dart';
+import 'ventana_principal.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class VentanaEscaneo extends StatefulWidget {
   @override
   _VentanaEscaneoState createState() => _VentanaEscaneoState();
 }
 
-class _VentanaEscaneoState extends State<VentanaEscaneo> {
+class _VentanaEscaneoState extends State<VentanaEscaneo> {status
   int _selectedIndex = 1; // Índice del elemento seleccionado en el menú
+
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  late QRViewController controller;
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Abrir la cámara automáticamente después de un pequeño retraso para permitir que la interfaz de usuario se construya
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        // Verificar si el widget está montado para evitar errores si se desmonta antes del retraso
+        controller?.resumeCamera();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +83,6 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
                   _selectedIndex = 1; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                // Agrega la lógica para la opción "Escaneo QR" aquí
               },
             ),
             ListTile(
@@ -75,36 +96,38 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.qr_code_scanner, size: 80, color: Colors.grey), // Icono para iniciar el escaneo
-            SizedBox(height: 20),
-            Text(
-              'Por favor, inicie el escaneo QR para los diferentes bienes.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 5,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
             ),
-            SizedBox(height: 20),
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/images/scan_image.jpg'), // Agrega la ruta de tu imagen de escaneo
-              radius: 60,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Agrega la lógica para iniciar el escaneo aquí
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFA80000), // Color del botón igual al de los otros botones
-                minimumSize: Size(double.infinity, 40),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  controller.toggleFlash();
+                },
+                child: Text('Encender/Apagar Flash'),
               ),
-              child: Text('Iniciar Escaneo', style: TextStyle(color: Colors.white)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      // Aquí puedes manejar el resultado del escaneo del código QR
+      print('Resultado del escaneo: ${scanData.code}');
+      // Puedes agregar aquí la lógica adicional que desees realizar con el código escaneado
+    });
   }
 }
