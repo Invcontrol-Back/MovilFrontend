@@ -63,7 +63,7 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text(
+                    const Text(
                       'LOGIN',
                       style: TextStyle(
                         fontSize: 30,
@@ -74,7 +74,7 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Usuario',
                         prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(),
