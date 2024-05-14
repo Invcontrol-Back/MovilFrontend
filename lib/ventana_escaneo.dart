@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/ventana_inicio_qr.dart';
 import 'ventana_principal.dart'; // Importa la ventana principal aquí
 import 'ventana_iniciar_sesion.dart';
 
@@ -94,7 +95,8 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Agrega la lógica para iniciar el escaneo aquí
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaInicioEscaneo()));
+                // Navegar a la ventana de inicio de escaneo al hacer clic en "Iniciar Escaneo"
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFA80000), // Color del botón igual al de los otros botones
@@ -102,6 +104,7 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
               ),
               child: Text('Iniciar Escaneo', style: TextStyle(color: Colors.white)),
             ),
+
           ],
         ),
       ),

@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/ventana_escaneo.dart';
-import 'package:flutter_application_1/ventana_iniciar_sesion.dart';
-import 'package:flutter_application_1/ventana_principal.dart';
+import 'ventana_iniciar_sesion.dart';
+import 'ventana_principal.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class VentanaInicioQR extends StatefulWidget {
+class VentanaInicioEscaneo extends StatefulWidget {
   @override
-  _VentanaInicioQRState createState() => _VentanaInicioQRState();
+  _VentanaInicioEscaneoState createState() => _VentanaInicioEscaneoState();
 }
 
-class _VentanaInicioQRState extends State<VentanaInicioQR> {
+class _VentanaInicioEscaneoState extends State<VentanaInicioEscaneo> {
   int _selectedIndex = 1; // Índice del elemento seleccionado en el menú
+
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  late QRViewController controller;
+  bool qrMessageShown = false; // Variable booleana para controlar si se mostró el mensaje del QR
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Abrir la cámara automáticamente después de un pequeño retraso para permitir que la interfaz de usuario se construya
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        // Verificar si el widget está montado para evitar errores si se desmonta antes del retraso
+        controller?.resumeCamera();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +84,6 @@ class _VentanaInicioQRState extends State<VentanaInicioQR> {
                   _selectedIndex = 1; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaEscaneo()));
-                // Navegar a la ventana de escaneo al hacer clic en "Escaneo QR"
               },
             ),
             ListTile(
@@ -77,35 +97,56 @@ class _VentanaInicioQRState extends State<VentanaInicioQR> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Por favor, inicie el escaneo QR para los diferentes bienes.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 5,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
             ),
-            SizedBox(height: 20),
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/images/scan_image.jpg'), // Agrega la ruta de tu imagen de escaneo
-              radius: 60,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaEscaneo()));
-                // Navegar a la ventana de escaneo al hacer clic en "Iniciar Escaneo"
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFA80000), // Color del botón igual al de los otros botones
-                minimumSize: Size(double.infinity, 40),
+          ),
+          Expanded(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  controller.toggleFlash();
+                },
+                child: Text('Encender/Apagar Flash'),
               ),
-              child: Text('Iniciar Escaneo', style: TextStyle(color: Colors.white)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      if (!qrMessageShown) {
+        setState(() {
+          qrMessageShown = true; // Marcamos que se mostró el mensaje del QR
+        });
+
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Código QR detectado'),
+            content: Text('Se ha detectado el código QR: ${scanData.code}'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Cerrar'),
+              ),
+            ],
+          ),
+        );
+      }
+    });
   }
 }

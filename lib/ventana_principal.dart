@@ -63,7 +63,7 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 1; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaInicioQR()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaEscaneo()));
                 // Navegar a la ventana de escaneo al hacer clic en "Escaneo QR"
               },
             ),
