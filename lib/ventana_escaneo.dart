@@ -1,16 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/ventana_escaneo.dart';
-import 'ventana_iniciar_sesion.dart'; // Importa la ventana de inicio de sesión aquí
+import 'ventana_iniciar_sesion.dart';
+import 'ventana_principal.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-import 'package:flutter/material.dart';
-
-class VentanaPrincipal extends StatefulWidget {
+class VentanaEscaneo extends StatefulWidget {
   @override
-  _VentanaPrincipalState createState() => _VentanaPrincipalState();
+  _VentanaEscaneoState createState() => _VentanaEscaneoState();
 }
 
-class _VentanaPrincipalState extends State<VentanaPrincipal> {
-  int _selectedIndex = 0; // Índice del elemento seleccionado en el menú
+class _VentanaEscaneoState extends State<VentanaEscaneo> {
+  int _selectedIndex = 1; // Índice del elemento seleccionado en el menú
+
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  late QRViewController controller;
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Abrir la cámara automáticamente después de un pequeño retraso para permitir que la interfaz de usuario se construya
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        // Verificar si el widget está montado para evitar errores si se desmonta antes del retraso
+        controller?.resumeCamera();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +71,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 0; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                // Agrega la lógica para la opción "Inicio" aquí
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaPrincipal()));
+                // Navegar a la ventana principal al hacer clic en "Inicio"
               },
             ),
             ListTile(
@@ -62,8 +83,6 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
                   _selectedIndex = 1; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaEscaneo()));
-                // Navegar a la ventana de escaneo al hacer clic en "Escaneo QR"
               },
             ),
             ListTile(
@@ -78,17 +97,37 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
         ),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'SISTEMA DE CONTROL DE INVENTARIOS',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24),
+        children: <Widget>[
+          Expanded(
+            flex: 5,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+            ),
           ),
-          SizedBox(height: 20),
-          Image.asset('assets/images/logo.png'), // Ajusta la ruta según la ubicación de tu imagen
+          Expanded(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  controller.toggleFlash();
+                },
+                child: Text('Encender/Apagar Flash'),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      // Aquí puedes manejar el resultado del escaneo del código QR
+      print('Resultado del escaneo: ${scanData.code}');
+      // Puedes agregar aquí la lógica adicional que desees realizar con el código escaneado
+    });
   }
 }
