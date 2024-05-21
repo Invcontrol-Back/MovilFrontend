@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'ventana_iniciar_sesion.dart';
-import 'ventana_principal.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'ventana_detalle_tecnologico.dart';
+import 'ventana_detalle_notecnologico.dart';
+import 'ventana_detalle_software.dart';
+import 'ventana_error_qr.dart';
 
 class VentanaInicioEscaneo extends StatefulWidget {
   @override
@@ -9,11 +11,10 @@ class VentanaInicioEscaneo extends StatefulWidget {
 }
 
 class _VentanaInicioEscaneoState extends State<VentanaInicioEscaneo> {
-  int _selectedIndex = 1; // Índice del elemento seleccionado en el menú
-
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController controller;
-  bool qrMessageShown = false; // Variable booleana para controlar si se mostró el mensaje del QR
+  bool _isLoading = false;
+  bool _isFlashOn = false;
 
   @override
   void dispose() {
@@ -22,103 +23,91 @@ class _VentanaInicioEscaneoState extends State<VentanaInicioEscaneo> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    // Abrir la cámara automáticamente después de un pequeño retraso para permitir que la interfaz de usuario se construya
-    Future.delayed(Duration.zero, () {
-      if (mounted) {
-        // Verificar si el widget está montado para evitar errores si se desmonta antes del retraso
-        controller?.resumeCamera();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('INVCONTROL', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFFA80000),
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('Nombre Apellido'),
-              accountEmail: Text('correo@example.com'),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile_picture.jpg'),
+      body: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                flex: 5,
+                child: QRView(
+                  key: qrKey,
+                  onQRViewCreated: _onQRViewCreated,
+                  overlay: QrScannerOverlayShape(
+                    borderColor: Colors.red,
+                    borderRadius: 10,
+                    borderLength: 30,
+                    borderWidth: 10,
+                    cutOutSize: 300,
+                  ),
+                ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.red,
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.home, color: _selectedIndex == 0 ? Color(0xFFA80000) : null),
-              title: Text('Inicio', style: TextStyle(color: _selectedIndex == 0 ? Color(0xFFA80000) : null)),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = 0; // Establecer el índice seleccionado
-                });
-                Navigator.pop(context); // Cerrar el drawer
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaPrincipal()));
-                // Navegar a la ventana principal al hacer clic en "Inicio"
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.qr_code, color: _selectedIndex == 1 ? Color(0xFFA80000) : null),
-              title: Text('Escaneo QR', style: TextStyle(color: _selectedIndex == 1 ? Color(0xFFA80000) : null)),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = 1; // Establecer el índice seleccionado
-                });
-                Navigator.pop(context); // Cerrar el drawer
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout, color: _selectedIndex == 2 ? Color(0xFFA80000) : null),
-              title: Text('Cerrar Sesión', style: TextStyle(color: _selectedIndex == 2 ? Color(0xFFA80000) : null)),
-              onTap: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaIniciarSesion()));
-                // Reemplazar la ventana actual con la ventana de inicio de sesión al hacer clic en "Cerrar Sesión"
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-            ),
+            ],
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.toggleFlash();
-                },
-                child: Text('Encender/Apagar Flash'),
+          if (_isLoading)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isLoading = false;
+                });
+              },
+              child: Container(
+                color: Colors.black.withOpacity(0.6),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 155,
+                        width: 155,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 11,
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF9D0000)),
+                        ),
+                      ),
+                      SizedBox(height: 50),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Color(0xFF9D0000),
+                        ),
+                        child: Text('Cancelar'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          Positioned(
+            top: 50,
+            left: 20,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: Color(0xFFA80000),
+                child: Icon(Icons.arrow_back, color: Colors.white),
               ),
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _toggleFlash();
+        },
+        child: Icon(_isFlashOn ? Icons.flash_on : Icons.flash_off),
+        backgroundColor: Colors.white,
+        foregroundColor: Color(0xFFA80000),
       ),
     );
   }
@@ -126,27 +115,45 @@ class _VentanaInicioEscaneoState extends State<VentanaInicioEscaneo> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      if (!qrMessageShown) {
+      if (!_isLoading) {
         setState(() {
-          qrMessageShown = true; // Marcamos que se mostró el mensaje del QR
+          _isLoading = true;
         });
-
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Código QR detectado'),
-            content: Text('Se ha detectado el código QR: ${scanData.code}'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Cerrar'),
-              ),
-            ],
-          ),
-        );
+        _navigateBasedOnScanResult(scanData.code!);
       }
+    });
+  }
+
+  Future<void> _navigateBasedOnScanResult(String scannedCode) async {
+    await Future.delayed(Duration(seconds: 6));
+    if (!_isLoading) return; // Salir si el proceso de carga ya se ha detenido
+    if (scannedCode.startsWith('DT-')) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => VentanaDetalleTecnologico(codigoQR: scannedCode)),
+      );
+    } else if (scannedCode.startsWith('DNT-')) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => VentanaDetalleNoTecnologico(codigoQR: scannedCode)),
+      );
+    } else if (scannedCode.startsWith('DS-')) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => VentanaDetalleSoftware(codigoQR: scannedCode)),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => VentanaErrorQR()),
+      );
+    }
+  }
+
+  void _toggleFlash() {
+    controller.toggleFlash();
+    setState(() {
+      _isFlashOn = !_isFlashOn;
     });
   }
 }
