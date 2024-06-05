@@ -3,9 +3,13 @@ import 'package:flutter_application_1/ventana_escaneo.dart';
 import 'package:flutter_application_1/ventana_inicio_qr.dart';
 import 'ventana_iniciar_sesion.dart'; // Importa la ventana de inicio de sesión aquí
 
-import 'package:flutter/material.dart';
-
 class VentanaPrincipal extends StatefulWidget {
+  final String nombre;
+  final String apellido;
+  final String correo;
+
+  VentanaPrincipal({required this.nombre, required this.apellido, required this.correo});
+
   @override
   _VentanaPrincipalState createState() => _VentanaPrincipalState();
 }
@@ -35,8 +39,8 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text('Nombre Apellido'),
-              accountEmail: Text('correo@example.com'),
+              accountName: Text('${widget.nombre} ${widget.apellido}'),
+              accountEmail: Text(widget.correo),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: AssetImage('assets/images/profile_picture.jpg'),
               ),

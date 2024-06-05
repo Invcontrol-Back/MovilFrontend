@@ -50,7 +50,7 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
                   _selectedIndex = 0; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaPrincipal()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaIniciarSesion()));
                 // Navegar a la ventana principal al hacer clic en "Inicio"
               },
             ),

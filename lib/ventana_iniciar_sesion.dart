@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'usuario_service.dart';
 import 'ventana_principal.dart'; // Importa la ventana principal aquí
 
 class VentanaIniciarSesion extends StatefulWidget {
@@ -10,9 +12,95 @@ class VentanaIniciarSesion extends StatefulWidget {
 
 class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isObscure = true; // Variable para controlar la visibilidad de la contraseña
+
+  final UsuarioService _usuarioService = UsuarioService();
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      String email = _emailController.text;
+      String password = _passwordController.text;
+
+      _showLoadingDialog();
+
+      try {
+        // Enviar la contraseña sin encriptar
+        final data = await _usuarioService.login(email, password);
+
+        print('Login successful: $data');
+
+        Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+
+        if (data.containsKey('usu_habilitado') && data['usu_habilitado'] == 'ACTIVO') {
+          // Credenciales válidas y usuario activo
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VentanaPrincipal(
+                nombre: data['usu_nombres'],
+                apellido: data['usu_apellidos'],
+                correo: data['usu_correo'],
+              ),
+            ),
+          );
+        } else {
+          // Usuario no activo
+          _showErrorDialog(email, password);
+        }
+      } catch (e) {
+        Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+
+        print('Login failed: $e');
+        // Credenciales inválidas
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Correo o contraseña incorrectos')),
+        );
+      }
+    }
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Iniciando sesión...'),
+          content: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(String email, String password) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error de inicio de sesión'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text('Correo: $email'),
+              Text('Contraseña: $password'),
+              SizedBox(height: 20),
+              Text('Correo o contraseña incorrectos'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +116,18 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                 padding: const EdgeInsets.only(top: 60.0),
                 child: Text(
                   'INVCONTROL',
-                  style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ),
         ),
       ),
-      body: ClipPath( // Envuelve el Scaffold dentro de un ClipPath para darle una forma triangular en la parte inferior
+      body: ClipPath(
+        // Envuelve el Scaffold dentro de un ClipPath para darle una forma triangular en la parte inferior
         clipper: MyClipper(),
         child: Container(
           decoration: const BoxDecoration(
@@ -53,7 +145,8 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    const SizedBox(height: 70), // Ajusta este valor según tu preferencia
+                    const SizedBox(
+                        height: 70), // Ajusta este valor según tu preferencia
                     const Text(
                       'Iniciar Sesión',
                       style: TextStyle(
@@ -66,10 +159,9 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                     const Text(
                       'LOGIN',
                       style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 30,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -94,15 +186,19 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: _isObscure, // Oculta el texto de la contraseña
+                      obscureText:
+                      _isObscure, // Oculta el texto de la contraseña
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
                         prefixIcon: Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
+                          icon: Icon(_isObscure
+                              ? Icons.visibility
+                              : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
-                              _isObscure = !_isObscure; // Alterna la visibilidad de la contraseña
+                              _isObscure =
+                              !_isObscure; // Alterna la visibilidad de la contraseña
                             });
                           },
                         ),
@@ -122,22 +218,7 @@ class _VentanaIniciarSesionState extends State<VentanaIniciarSesion> {
                     ),
                     const SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Suponiendo que las credenciales son correctas
-                          String email = _emailController.text;
-                          String password = _passwordController.text;
-                          if (email == 'bryan' && password == '12345') {
-                            // Si las credenciales son correctas, navega a la ventana principal
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => VentanaPrincipal(),
-                              ),
-                            );
-                          }
-                        }
-                      },
+                      onPressed: _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFA80000),
                         minimumSize: const Size(double.infinity, 40),
@@ -163,7 +244,8 @@ class AppBarClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height - 20);
-    path.quadraticBezierTo(size.width / 2, size.height, size.width, size.height - 20);
+    path.quadraticBezierTo(
+        size.width / 2, size.height, size.width, size.height - 20);
     path.lineTo(size.width, 0);
     path.close();
     return path;
