@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'ventana_detalle_tecnologico.dart';
-import 'ventana_detalle_notecnologico.dart';
-import 'ventana_detalle_software.dart';
 import 'ventana_error_qr.dart';
+
+//RED 1
 
 class VentanaInicioEscaneo extends StatefulWidget {
   @override
@@ -125,30 +127,53 @@ class _VentanaInicioEscaneoState extends State<VentanaInicioEscaneo> {
   }
 
   Future<void> _navigateBasedOnScanResult(String scannedCode) async {
-    await Future.delayed(Duration(seconds: 6));
-    if (!_isLoading) return; // Salir si el proceso de carga ya se ha detenido
-    if (scannedCode.startsWith('DT-')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => VentanaDetalleTecnologico(codigoQR: scannedCode)),
-      );
-    } else if (scannedCode.startsWith('DNT-')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => VentanaDetalleNoTecnologico(codigoQR: scannedCode)),
-      );
-    } else if (scannedCode.startsWith('DS-')) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => VentanaDetalleSoftware(codigoQR: scannedCode)),
-      );
-    } else {
+    final url = 'http://192.168.100.113:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$scannedCode';
+    print('Codigo: $url');
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Verifica si la respuesta es una lista y toma el primer elemento si es necesario
+        if (data is List && data.isNotEmpty) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VentanaDetalleTecnologico(data: (data[0] as Map).cast<String, dynamic>()),
+            ),
+          );
+        } else if (data is Map) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VentanaDetalleTecnologico(data: (data as Map).cast<String, dynamic>()),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => VentanaErrorQR()),
+          );
+        }
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => VentanaErrorQR()),
+        );
+      }
+    } catch (e) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => VentanaErrorQR()),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+
 
   void _toggleFlash() {
     controller.toggleFlash();

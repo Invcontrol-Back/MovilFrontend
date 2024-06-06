@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/ventana_inicio_qr.dart';
+import 'ventana_inicio_qr.dart';
 import 'ventana_principal.dart'; // Importa la ventana principal aquí
 import 'ventana_iniciar_sesion.dart';
+import 'ventana_manual.dart'; // Importa la ventana manual aquí
 
 class VentanaEscaneo extends StatefulWidget {
   @override
@@ -50,7 +51,11 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
                   _selectedIndex = 0; // Establecer el índice seleccionado
                 });
                 Navigator.pop(context); // Cerrar el drawer
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaIniciarSesion()));
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VentanaPrincipal(
+                  nombre: 'nombre', // Puedes asignar valores adecuados aquí
+                  apellido: 'apellido', // Puedes asignar valores adecuados aquí
+                  correo: 'correo@example.com', // Puedes asignar valores adecuados aquí
+                )));
                 // Navegar a la ventana principal al hacer clic en "Inicio"
               },
             ),
@@ -104,7 +109,18 @@ class _VentanaEscaneoState extends State<VentanaEscaneo> {
               ),
               child: Text('Iniciar Escaneo', style: TextStyle(color: Colors.white)),
             ),
-
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => VentanaManual()));
+                // Navegar a la ventana de entrada manual al hacer clic en "Ingrese aquí de forma manual"
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFA80000), // Color del botón igual al de los otros botones
+                minimumSize: Size(double.infinity, 40),
+              ),
+              child: Text('Ingrese aquí de forma manual', style: TextStyle(color: Colors.white)),
+            ),
           ],
         ),
       ),

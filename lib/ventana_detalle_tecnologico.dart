@@ -1,9 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'ventana_repotenciar.dart';
 
-class VentanaDetalleTecnologico extends StatelessWidget {
-  final String codigoQR;
+//RED 1
 
-  VentanaDetalleTecnologico({required this.codigoQR});
+class VentanaDetalleTecnologico extends StatefulWidget {
+  final Map<String, dynamic> data;
+
+  VentanaDetalleTecnologico({required this.data});
+
+  @override
+  _VentanaDetalleTecnologicoState createState() => _VentanaDetalleTecnologicoState();
+}
+
+class _VentanaDetalleTecnologicoState extends State<VentanaDetalleTecnologico> {
+  List<dynamic> componentes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    obtenerComponentes();
+  }
+
+  Future<void> obtenerComponentes() async {
+    final url = 'http://192.168.100.113:8000/api/detalleC/?parametro=${widget.data['tec_id']}';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        setState(() {
+          componentes = jsonDecode(response.body);
+        });
+      } else {
+        print('Error al obtener componentes: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error de conexión: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,29 +56,37 @@ class VentanaDetalleTecnologico extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            _buildDetailRow('CÓDIGO:', codigoQR),
-            _buildDetailRow('SERIE:', '4J212232'),
-            _buildDetailRow('NOMBRE:', 'Computadora de Escritorio'),
-            _buildDetailRow('ENCARGADO:', 'Juan Zapata'),
-            _buildDetailRow('MARCA:', 'Optiplex 7070'),
-            _buildDetailRow('MODELO:', 'DELL'),
-            _buildDetailRow('BLOQUE:', 'Bloque 2'),
-            _buildDetailRow('LOCALIZACIÓN:', 'PC 01'),
-            _buildDetailRow('LABORATORIO:', 'Laboratorio CTT'),
-            _buildDetailRow('IP:', '172.21.111.101'),
-            _buildDetailRow('MEMORIA RAM:', '16GB'),
-            _buildDetailRow('PROCESADOR:', 'Ryzen 5 5500'),
-            _buildDetailRow('ALMACENAMIENTO:', 'HDD 2TB, M.2 250GB'),
-            _buildDetailRow('CÓDIGO ADICIÓN:', '8856124781'),
-            _buildDetailRow('DETALLE REPOTENCIACIÓN:', 'Disco sólido M.2 250GB'),
+            _buildDetailRow('CÓDIGO:', widget.data['tec_codigo'] ?? 'N/A'),
+            _buildDetailRow('SERIE:', widget.data['tec_serie'] ?? 'N/A'),
+            _buildDetailRow('MODELO:', widget.data['tec_modelo'] ?? 'N/A'),
+            _buildDetailRow('MARCA:', widget.data['tec_marca'] ?? 'N/A'),
+            _buildDetailRow('IP:', widget.data['tec_ip'] ?? 'N/A'),
+            _buildDetailRow('AÑO DE INGRESO:', widget.data['tec_anio_ingreso'] ?? 'N/A'),
+            _buildDetailRow('ENCARGADO:', widget.data['usu_nombres'] ?? 'N/A'),
+            _buildDetailRow('CATEGORÍA:', widget.data['cat_nombre'] ?? 'N/A'),
+            _buildDetailRow('DEPARTAMENTO:', widget.data['dep_nombre'] ?? 'N/A'),
+            _buildDetailRow('LOCALIZACIÓN:', widget.data['loc_nombre'] ?? 'N/A'),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Lógica para repotenciar el bien tecnológico
+                  if (componentes.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VentanaRepotenciar(
+                          tecId: widget.data['tec_id'].toString(),
+                          data: componentes,
+                        ),
+                      ),
+                    );
+                  } else {
+                    print('No hay componentes disponibles.');
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Color(0xFF9D0000),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFF9D0000),
                 ),
                 child: Text('REPOTENCIAR'),
               ),
