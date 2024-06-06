@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/ventana_repontenciar.dart';
 
 class VentanaDetalleTecnologico extends StatelessWidget {
-  final String codigoQR;
+  final Map<String, dynamic> data;
 
-  VentanaDetalleTecnologico({required this.codigoQR});
+  VentanaDetalleTecnologico({required this.data});
 
   @override
   Widget build(BuildContext context) {
+    // Verifica si data['componentes'] es nulo antes de usarlo
+    List<dynamic> componentes = data['componentes'] ?? [];
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
@@ -22,29 +26,33 @@ class VentanaDetalleTecnologico extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            _buildDetailRow('CÓDIGO:', codigoQR),
-            _buildDetailRow('SERIE:', '4J212232'),
-            _buildDetailRow('NOMBRE:', 'Computadora de Escritorio'),
-            _buildDetailRow('ENCARGADO:', 'Juan Zapata'),
-            _buildDetailRow('MARCA:', 'Optiplex 7070'),
-            _buildDetailRow('MODELO:', 'DELL'),
-            _buildDetailRow('BLOQUE:', 'Bloque 2'),
-            _buildDetailRow('LOCALIZACIÓN:', 'PC 01'),
-            _buildDetailRow('LABORATORIO:', 'Laboratorio CTT'),
-            _buildDetailRow('IP:', '172.21.111.101'),
-            _buildDetailRow('MEMORIA RAM:', '16GB'),
-            _buildDetailRow('PROCESADOR:', 'Ryzen 5 5500'),
-            _buildDetailRow('ALMACENAMIENTO:', 'HDD 2TB, M.2 250GB'),
-            _buildDetailRow('CÓDIGO ADICIÓN:', '8856124781'),
-            _buildDetailRow('DETALLE REPOTENCIACIÓN:', 'Disco sólido M.2 250GB'),
+            _buildDetailRow('CÓDIGO:', data['tec_codigo'] ?? 'N/A'),
+            _buildDetailRow('SERIE:', data['tec_serie'] ?? 'N/A'),
+            _buildDetailRow('MODELO:', data['tec_modelo'] ?? 'N/A'),
+            _buildDetailRow('MARCA:', data['tec_marca'] ?? 'N/A'),
+            _buildDetailRow('IP:', data['tec_ip'] ?? 'N/A'),
+            _buildDetailRow('AÑO DE INGRESO:', data['tec_anio_ingreso'] ?? 'N/A'),
+            _buildDetailRow('ENCARGADO:', data['usu_nombres'] ?? 'N/A'),
+            _buildDetailRow('CATEGORÍA:', data['cat_nombre'] ?? 'N/A'),
+            _buildDetailRow('DEPARTAMENTO:', data['dep_nombre'] ?? 'N/A'),
+            _buildDetailRow('LOCALIZACIÓN:', data['loc_nombre'] ?? 'N/A'),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Lógica para repotenciar el bien tecnológico
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VentanaRepotenciar(
+                        tecId: data['tec_id'].toString(), // Convertir a cadena si es necesario
+                        data: componentes, // Usa la lista de componentes verificada
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Color(0xFF9D0000),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFF9D0000),
                 ),
                 child: Text('REPOTENCIAR'),
               ),
@@ -55,6 +63,7 @@ class VentanaDetalleTecnologico extends StatelessWidget {
     );
   }
 
+  // Método para construir una fila de detalles
   Widget _buildDetailRow(String title, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8),
@@ -75,6 +84,7 @@ class VentanaDetalleTecnologico extends StatelessWidget {
     );
   }
 
+  // Método para construir el botón de cierre
   Widget _buildCloseButton(BuildContext context) {
     return Positioned(
       top: 20,
