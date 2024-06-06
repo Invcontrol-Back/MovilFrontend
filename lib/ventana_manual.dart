@@ -5,6 +5,8 @@ import 'ventana_detalle_tecnologico.dart';
 import 'ventana_error_qr.dart';
 import 'ventana_escaneo.dart'; // Importa la ventana anterior para regresar
 
+//RED 1
+
 class VentanaManual extends StatefulWidget {
   @override
   _VentanaManualState createState() => _VentanaManualState();

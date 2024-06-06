@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'ventana_detalle_tecnologico.dart';
 import 'ventana_error_qr.dart';
 
+//RED 1
+
 class VentanaInicioEscaneo extends StatefulWidget {
   @override
   _VentanaInicioEscaneoState createState() => _VentanaInicioEscaneoState();
