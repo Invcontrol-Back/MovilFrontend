@@ -83,7 +83,9 @@ class _VentanaManualState extends State<VentanaManual> {
       _isLoading = true;
     });
 
-    final url = 'http://192.168.100.113:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$code';
+    //final url = 'http://10.79.5.136:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$code';
+    final url = 'http://192.168.1.27:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$code';
+
     try {
       final response = await http.get(Uri.parse(url));
 

@@ -127,7 +127,8 @@ class _VentanaInicioEscaneoState extends State<VentanaInicioEscaneo> {
   }
 
   Future<void> _navigateBasedOnScanResult(String scannedCode) async {
-    final url = 'http://192.168.100.113:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$scannedCode';
+    //final url = 'http://10.79.5.136:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$scannedCode';
+    final url = 'http://192.168.1.27:8000/api/tecnologico/obtener_tecnologico_especifico/?tecnologico=$scannedCode';
     print('Codigo: $url');
     try {
       final response = await http.get(Uri.parse(url));

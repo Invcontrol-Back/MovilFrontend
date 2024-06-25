@@ -91,7 +91,7 @@ class _VentanaPrincipalState extends State<VentanaPrincipal> {
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(height: 20),
-          Image.asset('assets/images/logo.png'), // Ajusta la ruta según la ubicación de tu imagen
+
         ],
       ),
     );

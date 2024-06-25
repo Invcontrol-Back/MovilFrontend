@@ -3,8 +3,12 @@ import 'package:http/http.dart' as http;
 
 class UsuarioService {
   //RED 2
-  final String url = 'http://192.168.100.113:8000/api/usuario/';
-  final String urlLogin = 'http://192.168.100.113:8000/api/login/';
+  //final String url = 'http://10.79.5.136:8000/api/usuario/';
+  final String url = 'http://192.168.1.27:8000/api/usuario/';
+
+  //final String urlLogin = 'http://10.79.5.136:8000/api/login/';
+  final String urlLogin = 'http://192.168.1.27:8000/api/login/';
+
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     final Map<String, String> bodyData = {'usu_correo': email, 'usu_contrasenia': password};
