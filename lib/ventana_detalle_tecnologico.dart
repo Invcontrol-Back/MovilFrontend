@@ -3,8 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'ventana_repotenciar.dart';
 
-//RED 1
-
 class VentanaDetalleTecnologico extends StatefulWidget {
   final Map<String, dynamic> data;
 
@@ -24,13 +22,28 @@ class _VentanaDetalleTecnologicoState extends State<VentanaDetalleTecnologico> {
   }
 
   Future<void> obtenerComponentes() async {
-    final url = 'http://192.168.100.113:8000/api/detalleC/?parametro=${widget.data['tec_id']}';
+    final url = 'http://192.168.1.27:8000/api/componente/';
+
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
+        List<dynamic> allComponentes = jsonDecode(response.body);
+
+        // Filtrar componentes por com_codigo_bien igual al tec_codigo del widget
+        List<dynamic> filteredComponentes = allComponentes
+            .where((componente) => componente['com_codigo_bien'] == widget.data['tec_codigo'])
+            .toList();
+
         setState(() {
-          componentes = jsonDecode(response.body);
+          componentes = filteredComponentes;
         });
+
+        // Imprimir com_codigo_bien que se desea con tec_codigo
+        print('Componentes para tec_codigo ${widget.data['tec_codigo']}:');
+        componentes.forEach((componente) {
+          print(componente['com_codigo_bien']);
+        });
+
       } else {
         print('Error al obtener componentes: ${response.reasonPhrase}');
       }
@@ -67,6 +80,33 @@ class _VentanaDetalleTecnologicoState extends State<VentanaDetalleTecnologico> {
             _buildDetailRow('DEPARTAMENTO:', widget.data['dep_nombre'] ?? 'N/A'),
             _buildDetailRow('LOCALIZACIÓN:', widget.data['loc_nombre'] ?? 'N/A'),
             SizedBox(height: 20),
+            if (componentes.isNotEmpty)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Componentes:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: componentes.length,
+                    itemBuilder: (context, index) {
+                      return _buildComponenteItem(componentes[index]);
+                    },
+                  ),
+                ],
+              ),
+            if (componentes.isEmpty)
+              Center(
+                child: Text(
+                  'No hay componentes disponibles para este bien.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -75,11 +115,15 @@ class _VentanaDetalleTecnologicoState extends State<VentanaDetalleTecnologico> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => VentanaRepotenciar(
-                          tecId: widget.data['tec_id'].toString(),
-                          data: componentes,
+                          tecId: widget.data['tec_codigo'].toString(),
+                          data: componentes, // Pasar la lista de componentes filtrados
                         ),
                       ),
-                    );
+                    ).then((value) {
+                      if (value != null && value is bool && value) {
+                        obtenerComponentes(); // Actualizar lista de componentes si es necesario
+                      }
+                    });
                   } else {
                     print('No hay componentes disponibles.');
                   }
@@ -114,6 +158,21 @@ class _VentanaDetalleTecnologicoState extends State<VentanaDetalleTecnologico> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildComponenteItem(dynamic componente) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDetailRow('ID:', componente['com_id'].toString()),
+        _buildDetailRow('Serie:', componente['com_serie'] ?? 'N/A'),
+        _buildDetailRow('Modelo:', componente['com_modelo'] ?? 'N/A'),
+        _buildDetailRow('Característica:', componente['com_caracteristica'] ?? 'N/A'),
+        _buildDetailRow('Año de ingreso:', componente['com_anio_ingreso'] ?? 'N/A'),
+        _buildDetailRow('Estado:', componente['com_estado'] ?? 'N/A'),
+        SizedBox(height: 10),
+      ],
     );
   }
 
