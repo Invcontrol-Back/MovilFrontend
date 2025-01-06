@@ -67,3 +67,73 @@ Este proyecto está bajo la Licencia MIT - mira el archivo [LICENSE.md](LICENSE.
 ---
 
 ⌨️ con ❤️ por [Bryanovi](https://github.com/Bryanovi) 😊
+---
+
+# MovilFrontend
+
+This project is a mobile application developed in Flutter to manage and control inventories. It is designed to provide a friendly and efficient interface for inventory management from mobile devices.
+
+## Getting started 🚀
+
+These instructions will allow you to get a working copy of the project on your local machine for development and testing purposes.
+
+See **Deployment** to learn how to deploy the project.
+
+### Prerequisites 📋
+
+You must have Flutter and its dependencies installed. You can follow the instructions in the [official Flutter documentation](https://flutter.dev/docs/get-started/install).
+
+You'll also need Git to clone the repository:
+
+### Setup 🔧
+
+Follow these steps to set up your development environment:
+
+1. Clone the repository:
+git clone https://github.com/Invcontrol-Back/MovilFrontend.git
+
+2. Navigate to the project directory:
+cd MovilFrontend
+
+3. Install the Flutter dependencies:
+flutter pub get
+
+4. Connect your mobile device or launch an emulator.
+
+5. Run the app:
+
+### Running the tests ⚙️
+
+Explains how to run the automated tests for this system.
+
+#### Analyze the end-to-end tests 🔩
+
+These tests verify the complete operation of the application, from start to finish, ensuring that all components interact correctly.
+
+flutter drive --target=test_driver/app.dart
+
+#### And coding style tests ⌨️
+
+These tests ensure that the code follows Flutter style guides and best practices.
+
+flutter analyze
+flutter format --set-exit-if-changed
+## Version control 📌
+
+We use [SemVer](http://semver.org/) for version control. For all available versions, see the [tags in this repository](https://github.com/Invcontrol-Back/MovilFrontend/tags).
+
+## Authors ✒️
+
+Mention all those who helped build the project from the beginning:
+
+* **Bryanovi** - *Early work* - [Bryanovi](https://github.com/Bryanovi)
+
+You can also see the list of all [contributors](https://github.com/Invcontrol-Back/MovilFrontend/contributors) who have participated in this project.
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for more details.
+
+---
+
+⌨️ with ❤️ by [Bryanovi](https://github.com/Bryanovi) 😊
